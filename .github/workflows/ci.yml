@@ -37,8 +37,16 @@ jobs:
     - name: Test
       run: npm test
 
+    - name: Changed page directories
+      id: find-changes
+      run: |
+        changed_files=$(git diff --name-only ${{ github.event.before }}..${{ github.sha }} | xargs -I{} dirname {} | grep -Eo '^(pages[^/]*)' | sort -u
+        echo "CHANGED_PAGE_DIRECTORIES=${changed_files}" >> $GITHUB_ENV
+
     - name: Build
-      run: bash scripts/build.sh
+      run: |
+        echo "Something: ${CHANGED_PAGE_DIRECTORIES}"
+        bash scripts/build.sh
 
     - name: Build PDF
       if: github.repository == 'tldr-pages/tldr' && github.ref == 'refs/heads/main'
