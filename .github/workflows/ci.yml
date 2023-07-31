@@ -42,8 +42,8 @@ jobs:
     - name: Changed page directories
       id: find-changes
       run: |
-        changed_files=$(git diff --name-only ${{ github.event.after}} ${{ github.event.before }} | xargs -I{} dirname {} | grep -Eo '^(pages[^/]*)' | sort -u)
-        echo "CHANGED_PAGE_DIRECTORIES=${changed_files}" >> $GITHUB_ENV
+        changed_files="$(git diff --name-only ${{ github.event.after}} ${{ github.event.before }} | xargs -I{} dirname {} | grep -Eo '^(pages[^/]*)' | sort -u)"
+        echo "CHANGED_PAGE_DIRECTORIES=$changed_files" >> $GITHUB_ENV
 
     - name: Build
       run: |
