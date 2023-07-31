@@ -19,7 +19,3 @@
 - Send a swipe gesture to an Android device:
 
 `input swipe {{x_start}} {{y_start}} {{x_end}} {{y_end}} {{duration_in_ms}}`
-
-- Send a long press to an Android device using a swipe gesture:
-
-`input swipe {{x_position}} {{y_position}} {{x_position}} {{y_position}} {{duration_in_ms}}`
