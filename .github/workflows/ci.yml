@@ -1,9 +1,6 @@
 name: CI
 
-on:
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, closed]
+on: ['push', 'pull_request']
 
 permissions:
   contents: read # to fetch code (actions/checkout)
@@ -18,7 +15,6 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-        ref: ${{ github.event.pull_request.head.ref }}
 
     - uses: actions/setup-python@v4
       with:
@@ -29,6 +25,18 @@ jobs:
       with:
         node-version: 'lts/*'
         cache: 'npm'
+
+    - name: Determine the base commit
+      id: base-commit
+      run: |
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          base_commit="${{ github.event.pull_request.base.ref }}"
+        else
+          # For push events, use github.event.before to get the previous commit
+          base_commit="${{ github.event.before }}"
+        fi
+        echo "COMMIT_BASE_REF=$base_commit" >> $GITHUB_ENV
+        echo "Base commit: $base_commit"
 
     - name: Set up PR environment
       if: github.event.number != null
@@ -46,7 +54,7 @@ jobs:
     - name: Changed page directories
       id: find-changes
       run: |
-        changed_files="$(git diff --name-only ${{ github.event.after}} ${{ github.event.before }} | xargs -I{} dirname {} | grep -Eo '^(pages[^/]*)' | sort -u)"
+        changed_files="$(git diff --name-only $COMMIT_BASE_REF | xargs -I{} dirname {} | grep -Eo '^(pages[^/]*)' | sort -u)"
         echo "CHANGED_PAGE_DIRECTORIES=$changed_files" >> $GITHUB_ENV
 
     - name: Build
