@@ -55,7 +55,8 @@ jobs:
       id: find-changes
       run: |
         changed_files="$(git diff --name-only $COMMIT_BASE_REF | xargs -I{} dirname {} | grep -Eo '^(pages[^/]*)' | sort -u)"
-        echo "CHANGED_PAGE_DIRECTORIES=$changed_files" >> $GITHUB_ENV
+        CHANGED_DIRS_AS_A_LINE=$(paste -sd " " <(echo $changed_files))
+        echo "CHANGED_PAGE_DIRECTORIES=$CHANGED_DIRS_AS_A_LINE" >> $GITHUB_ENV
 
     - name: Build
       run: |
